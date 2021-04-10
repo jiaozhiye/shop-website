@@ -2,9 +2,12 @@
   <div>
     <div class="toper">
       <div class="w1200 top tr">
-        <span>您好，请</span>
-        <el-button type="text" @click="toLogin">登录</el-button>
-        <el-button type="text" @click="visible = !0">免费注册</el-button>
+        <span v-if="!customer">您好，请&nbsp;</span>
+        <span v-else>
+          欢迎 <em class="name">{{ customer }}</em> 回来&nbsp;&nbsp;
+        </span>
+        <el-button v-if="!customer" type="text" @click="toLogin">登录</el-button>
+        <el-button v-if="!customer" type="text" @click="visible = !0">免费注册</el-button>
         <el-button type="text">我的订单</el-button>
         <el-button type="text">购物车</el-button>
       </div>
@@ -127,6 +130,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import { getUserName } from '@/utils/cookies';
 import { doRegister } from '@website/api/home';
 
 export default {
@@ -144,6 +148,7 @@ export default {
     return {
       svalue: '',
       visible: false,
+      customer: getUserName(),
       form: {
         username: '',
         password: '',
@@ -161,6 +166,13 @@ export default {
   },
   computed: {
     ...mapState('app', ['loginInfo'])
+  },
+  watch: {
+    [`loginInfo.name`](next) {
+      if (next) {
+        this.customer = next;
+      }
+    }
   },
   methods: {
     async doValidate() {
@@ -193,6 +205,9 @@ export default {
   background: #f0f0f0;
   .top {
     line-height: 40px;
+    .name {
+      color: $primaryColor;
+    }
   }
 }
 .search {

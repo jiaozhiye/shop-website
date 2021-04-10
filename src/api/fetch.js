@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-03-28 10:51:00
+ * @Last Modified time: 2021-04-10 10:11:18
  */
 import axios from 'axios';
 import qs from 'qs';
@@ -58,7 +58,7 @@ const removePending = config => {
 const instance = axios.create({
   baseURL: config.host,
   timeout: 1000 * 20,
-  withCredentials: true, // 跨域请求时是否需要使用凭证
+  // withCredentials: true, // 跨域请求时是否需要使用凭证
   paramsSerializer: params => {
     // 序列化 GET 请求参数 -> a: [1, 2] => a=1&a=2
     return qs.stringify(params, { arrayFormat: 'repeat' });

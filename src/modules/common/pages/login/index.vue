@@ -66,7 +66,8 @@ export default {
 <style>
 .login-wrapper {
   height: 100vh;
-  background: #f2f2f2;
+  background: #f2f2f2 url(../../../../assets/img/login_bg.svg) no-repeat;
+  background-size: cover;
 }
 .login-wrapper .welcome {
   text-align: center;
