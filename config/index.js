@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-03-28 13:25:52
+ * @Last Modified time: 2021-04-11 14:28:01
  */
 'use strict';
 const path = require('path');
@@ -20,7 +20,7 @@ module.exports = {
     // 请求代理配置 -> can be modified
     proxyTable: {
       '/api': {
-        target: 'http://127.0.0.1:3000',
+        target: 'http://127.0.0.1:3020',
         changeOrigin: true, // 支持跨域
         // secure: false, // 支持 https
         pathRewrite: {
