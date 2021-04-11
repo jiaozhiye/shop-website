@@ -15,94 +15,29 @@
     <div class="w1200">
       <div class="search">
         <el-input v-model="svalue" placeholder="请输入内容" prefix-icon="el-icon-search" />
-        <el-button type="primary" class="button">搜 索</el-button>
+        <el-button type="primary" class="button" @click="searchHandle">搜 索</el-button>
       </div>
     </div>
     <div class="w1200 goods">
       <ul class="clearfix">
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
+        <li v-for="item in goodsList" :key="item.id">
+          <a :href="`/detial?id=${item.id}`">
+            <img :src="item.img_path" />
+            <h5 class="title">{{ item.title }}</h5>
             <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
-            </h5>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
-            <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
-            </h5>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
-            <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
-            </h5>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
-            <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
-            </h5>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
-            <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
-            </h5>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
-            <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
-            </h5>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
-            <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
-            </h5>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="../../../../assets/img/avatar.jpg" />
-            <h5 class="title">啊实打实大大</h5>
-            <h5 class="price">
-              <span>零售价: <i style="text-decoration: line-through">￥12.00</i></span>
-              <span>会员价：<i>￥10.00</i></span>
+              <span>
+                零售价: <i style="text-decoration: line-through">￥{{ item.price }}</i>
+              </span>
+              <span>
+                会员价：<i>￥{{ item.vprice }}</i>
+              </span>
             </h5>
           </a>
         </li>
       </ul>
+      <dl v-if="!goodsList.length" class="no-data">暂无数据...</dl>
       <dl>
-        <el-pagination background layout="prev, pager, next" :total="1000"> </el-pagination>
+        <el-pagination background layout="prev, pager, next" :total="total" @current-change="handleCurrentChange"> </el-pagination>
       </dl>
     </div>
     <div class="footer"></div>
@@ -131,7 +66,7 @@
 <script>
 import { mapState } from 'vuex';
 import { getUserName } from '@/utils/cookies';
-import { doRegister } from '@website/api/home';
+import { doRegister, getGoodsList } from '@website/api/home';
 
 export default {
   name: 'Home',
@@ -161,7 +96,11 @@ export default {
           { min: 4, max: 8, message: '长度在 4 到 8 个字符', trigger: 'blur' }
         ],
         checkPass: [{ validator: validatePass, trigger: 'blur' }]
-      }
+      },
+      goodsList: [],
+      currentPage: 1,
+      pageSize: 8,
+      total: 0
     };
   },
   computed: {
@@ -173,6 +112,9 @@ export default {
         this.customer = next;
       }
     }
+  },
+  mounted() {
+    this.getList();
   },
   methods: {
     async doValidate() {
@@ -194,6 +136,21 @@ export default {
     },
     toLogin() {
       this.$router.push({ path: '/login' });
+    },
+    searchHandle() {
+      this.currentPage = 1;
+      this.getList();
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getList();
+    },
+    async getList() {
+      const res = await getGoodsList({ currentPage: this.currentPage, pageSize: this.pageSize, title: this.svalue });
+      if (res.code === 200) {
+        this.goodsList = res.data?.records || [];
+        this.total = res.data?.total || 0;
+      }
     }
   }
 };
@@ -223,8 +180,10 @@ export default {
   ul {
     li {
       float: left;
-      margin: 10px;
-      width: 280px;
+      padding: 10px;
+      margin: 0 5px;
+      width: 270px;
+      transition: all 0.3s ease;
       a {
         display: block;
         img {
@@ -242,12 +201,19 @@ export default {
           font-weight: normal;
         }
       }
+      &:hover {
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+      }
     }
   }
   dl {
     margin-top: 10px;
     margin-bottom: 20px;
     text-align: right;
+  }
+  .no-data {
+    text-align: center;
+    padding: 100px 0;
   }
 }
 .footer {

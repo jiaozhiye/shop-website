@@ -7,5 +7,5 @@
 import config from '@/config';
 
 export default {
-  SYS: `${config.prefix}/website`
+  WEB: `${config.prefix}/website`
 };
