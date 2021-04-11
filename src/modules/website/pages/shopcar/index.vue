@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import { getUserName } from '@/utils/cookies';
+
 export default {
   name: 'ShopCar',
   data() {
@@ -47,12 +49,25 @@ export default {
       }, 0);
     }
   },
+  watch: {
+    shopcars: {
+      handler(val) {
+        const key = `shopcar_${getUserName()}`;
+        localStorage.setItem(key, JSON.stringify(val));
+      },
+      deep: true
+    }
+  },
   mounted() {
     this.getShopcarList();
   },
   methods: {
     getShopcarList() {
-      this.shopcars = JSON.parse(localStorage.getItem('shopcar')) || [];
+      const key = `shopcar_${getUserName()}`;
+      this.shopcars = JSON.parse(localStorage.getItem(key)) || [];
+    },
+    removeHandle(id) {
+      this.shopcars = this.shopcars.filter(x => x.id !== id);
     },
     accountHandle() {}
   }
@@ -63,6 +78,7 @@ export default {
 .shopcar {
   padding-top: 40px;
   ul {
+    min-height: 80px;
     border: 1px solid #d9d9d9;
     li {
       display: flex;
@@ -70,6 +86,9 @@ export default {
       height: 80px;
       padding: 10px;
       border-bottom: 1px solid #d9d9d9;
+      &:last-child {
+        border-bottom: 0;
+      }
       .img {
         width: 150px;
       }

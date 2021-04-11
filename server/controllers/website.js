@@ -15,7 +15,7 @@ const register = async (ctx, next) => {
     // 数据库 I/O
     await db.query(
       `
-        INSERT INTO customer (id, name, password) VALUES (?, ?, ?)
+        INSERT INTO customer (id, account, password) VALUES (?, ?, ?)
       `,
       [uuid(), username, md5(password)]
     );
@@ -23,7 +23,7 @@ const register = async (ctx, next) => {
     // 返回数据
     ctx.body = {
       code: 200,
-      msg: '注册成功！',
+      msg: '注册成功！'
     };
   } catch (e) {
     console.error(e);
@@ -40,15 +40,15 @@ const doLogin = async (ctx, next) => {
     // 数据库 I/O
     rows = await db.query(
       `
-        SELECT 
-            t1.id, t1.name
-        FROM 
-        customer t1
-        WHERE 
-            t1.name=?
-        AND 
+        SELECT
+            t1.id, t1.account AS name
+        FROM
+          customer t1
+        WHERE
+            t1.account=?
+        AND
             t1.password=?
-        AND 
+        AND
             t1.deleted=0
         `,
       [username, md5(password)]
@@ -66,7 +66,7 @@ const doLogin = async (ctx, next) => {
 
     // token签名 有效期为24小时
     let token = jwt.sign({ name: data.name }, config.auth.admin_secret, {
-      expiresIn: '24h',
+      expiresIn: '24h'
     });
 
     // 返回数据
@@ -76,8 +76,8 @@ const doLogin = async (ctx, next) => {
       data: {
         id: data.id,
         name: data.name,
-        token,
-      },
+        token
+      }
     };
   } catch (e) {
     console.error(e);
@@ -97,7 +97,7 @@ const getGoodsList = async (ctx, next) => {
     // 数据库 I/O
     const rows = await db.query(
       `
-        SELECT 
+        SELECT
             t1.id,
             t1.title,
             t1.description,
@@ -109,7 +109,7 @@ const getGoodsList = async (ctx, next) => {
             ${utils.formatDateTime('t1.create_on')} AS create_on
         FROM
             goods t1
-        WHERE 
+        WHERE
             t1.deleted = ? ${titleWhere}
         ${pagination}
       `,
@@ -133,9 +133,9 @@ const getGoodsList = async (ctx, next) => {
       code: 200,
       data: {
         records: rows,
-        total,
+        total
       },
-      msg: '',
+      msg: ''
     };
   } catch (e) {
     console.error(e);
@@ -149,7 +149,7 @@ const getGoodsRecord = async (ctx, next) => {
     // 数据库 I/O
     const rows = await db.query(
       `
-        SELECT 
+        SELECT
             t1.id,
             t1.title,
             t1.description,
@@ -161,7 +161,7 @@ const getGoodsRecord = async (ctx, next) => {
             ${utils.formatDateTime('t1.create_on')} AS create_on
         FROM
             goods t1
-        WHERE 
+        WHERE
             t1.deleted = ? AND id = ?
       `,
       [0, id]
@@ -172,7 +172,72 @@ const getGoodsRecord = async (ctx, next) => {
       ctx.body = {
         code: 200,
         data: rows[0],
-        msg: '',
+        msg: ''
+      };
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const getPersonInfo = async (ctx, next) => {
+  const account = utils.getTokenName(ctx.request.headers.jwt);
+
+  try {
+    // 数据库 I/O
+    const rows = await db.query(
+      `
+        SELECT
+            t1.id,
+            t1.account,
+            t1.name,
+            t1.phone,
+            t1.address
+        FROM
+            customer t1
+        WHERE
+          t1.account = ? AND t1.deleted = ?
+      `,
+      [account, 0]
+    );
+
+    if (rows.length) {
+      // 返回数据
+      ctx.body = {
+        code: 200,
+        data: rows[0],
+        msg: ''
+      };
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const updatePersonInfo = async (ctx, next) => {
+  let { account, name, phone, address } = ctx.request.body;
+
+  try {
+    const rows = await db.query(
+      `
+        UPDATE
+            customer t1
+        SET
+            t1.name = ?,
+            t1.phone = ?,
+            t1.address = ?
+        WHERE
+            t1.account = ?
+      `,
+      [name, phone, address, account]
+    );
+
+    if (rows.affectedRows) {
+      // 返回数据
+      ctx.body = {
+        code: 200,
+        data: null,
+        msg: ''
       };
     }
   } catch (e) {
@@ -185,4 +250,6 @@ module.exports = {
   doLogin,
   getGoodsList,
   getGoodsRecord,
+  getPersonInfo,
+  updatePersonInfo
 };

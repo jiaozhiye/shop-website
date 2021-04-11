@@ -15,5 +15,7 @@ router.post('/api/website/register', controllers.website.register);
 router.post('/api/website/doLogin', controllers.website.doLogin);
 router.post('/api/website/getGoodsList', controllers.website.getGoodsList);
 router.get('/api/website/getGoodsRecord', controllers.website.getGoodsRecord);
+router.get('/api/auth/getPersonInfo', controllers.website.getPersonInfo);
+router.post('/api/auth/updatePersonInfo', controllers.website.updatePersonInfo);
 
 module.exports = router;

@@ -1,8 +1,8 @@
 /**
- * @Author: 焦质晔
+ * @Author: mashaoze
  * @Date: 2019-06-20 10:00:00
- * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-03-28 15:05:19
+ * @Last Modified by: mashaoze
+ * @Last Modified time: 2021-04-11 14:37:03
  */
 import router from '@/routes';
 import store from '@/store';
@@ -17,7 +17,7 @@ import i18n from '@/lang';
 NProgress.configure({ showSpinner: false });
 
 // 访问白名单
-const whiteList = ['/login', '/home'];
+const whiteList = ['/login', '/home', '/detial'];
 
 // 权限白名单
 const whiteAuth = ['/home', '/iframe', '/redirect', '/404'];

@@ -1,8 +1,8 @@
 <script>
 /**
- * @Author: 焦质晔
+ * @Author: mashaoze
  * @Date: 2019-06-20 10:00:00
- * @Last Modified by: 焦质晔
+ * @Last Modified by: mashaoze
  * @Last Modified time: 2020-10-13 15:05:34
  **/
 import screenfull from 'screenfull';

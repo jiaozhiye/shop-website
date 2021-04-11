@@ -10,9 +10,9 @@
 
 <script>
 /*
- * @Author: 焦质晔
+ * @Author: mashaoze
  * @Date: 2020-04-23 19:44:29
- * @Last Modified by: 焦质晔
+ * @Last Modified by: mashaoze
  * @Last Modified time: 2020-05-17 16:56:33
  */
 import { mapState, mapActions } from 'vuex';

@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { getToken, getUserName } from '@/utils/cookies';
 import { getGoodsRecord } from '@website/api/detial';
 
 const goods_type = [
@@ -96,12 +97,16 @@ export default {
     addToShopCar() {
       const { id } = this.goodsItem;
       if (!id) return;
-      const carts = JSON.parse(localStorage.getItem('shopcar')) || [];
+      if (!getToken() || !getUserName()) {
+        return this.$message.warning('登录之后才能购买！');
+      }
+      const key = `shopcar_${getUserName()}`;
+      const carts = JSON.parse(localStorage.getItem(key)) || [];
       if (carts.findIndex(x => x.id === id) !== -1) {
         return this.$message.warning('此商品已经在购物车中，请到购物车中修改购买数量！');
       }
       carts.push({ id, ...this.goodsItem, ...this.form });
-      localStorage.setItem('shopcar', JSON.stringify(carts));
+      localStorage.setItem(key, JSON.stringify(carts));
     },
     goToHandle(path) {
       this.$router.push({ path });
