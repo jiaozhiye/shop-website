@@ -6,10 +6,11 @@
         <span v-else>
           欢迎 <em class="name">{{ customer }}</em> 回来&nbsp;&nbsp;
         </span>
-        <el-button v-if="!customer" type="text" @click="toLogin">登录</el-button>
+        <el-button v-if="!customer" type="text" @click="goToHandle('/login')">登录</el-button>
         <el-button v-if="!customer" type="text" @click="visible = !0">免费注册</el-button>
-        <el-button type="text">我的订单</el-button>
-        <el-button type="text">购物车</el-button>
+        <el-button type="text" @click="goToHandle('/order')">我的订单</el-button>
+        <el-button type="text" @click="goToHandle('/shopcar')">购物车</el-button>
+        <el-button type="text" @click="goToHandle('/pcenter')">个人中心</el-button>
       </div>
     </div>
     <div class="w1200">
@@ -134,8 +135,8 @@ export default {
         this.visible = !1;
       }
     },
-    toLogin() {
-      this.$router.push({ path: '/login' });
+    goToHandle(path) {
+      this.$router.push({ path });
     },
     searchHandle() {
       this.currentPage = 1;
