@@ -42,7 +42,7 @@
       </dl>
     </div>
     <div class="footer"></div>
-    <el-dialog title="新用户注册" :visible.sync="visible" width="50%">
+    <el-dialog title="新用户注册" :visible.sync="visible" width="50%" :close-on-click-modal="false">
       <div>
         <el-form ref="form" label-position="top" :model="form" :rules="rules">
           <el-form-item label="用户名" prop="username">

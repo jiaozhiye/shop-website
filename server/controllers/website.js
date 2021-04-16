@@ -49,9 +49,9 @@ const doLogin = async (ctx, next) => {
         AND
             t1.password=?
         AND
-            t1.deleted=0
+            t1.deleted=?
         `,
-      [username, md5(password)]
+      [username, md5(password), 0]
     );
   } catch (e) {
     console.error(e);
@@ -111,6 +111,8 @@ const getGoodsList = async (ctx, next) => {
             goods t1
         WHERE
             t1.deleted = ? ${titleWhere}
+        ORDER BY
+            t1.create_on DESC
         ${pagination}
       `,
       [0]
@@ -245,11 +247,185 @@ const updatePersonInfo = async (ctx, next) => {
   }
 };
 
+const getVipInfo = async (ctx, next) => {
+  const account = utils.getTokenName(ctx.request.headers.jwt);
+
+  try {
+    // 数据库 I/O
+    const rows = await db.query(
+      `
+        SELECT
+            t1.id,
+            t1.account,
+            t1.name,
+            t1.is_vip
+        FROM
+            customer t1
+        WHERE
+          t1.account = ? AND t1.deleted = ?
+      `,
+      [account, 0]
+    );
+
+    if (rows.length) {
+      // 返回数据
+      ctx.body = {
+        code: 200,
+        data: rows[0],
+        msg: ''
+      };
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const createOrderList = async (ctx, next) => {
+  const account = utils.getTokenName(ctx.request.headers.jwt);
+  const { goods } = ctx.request.body;
+
+  try {
+    const [row] = await db.query(
+      `
+        SELECT
+            t1.id,
+            t1.account,
+            t1.name,
+            t1.phone,
+            t1.address,
+            t1.is_vip
+        FROM
+            customer t1
+        WHERE
+            t1.account=? AND t1.deleted=?
+      `,
+      [account, 0]
+    );
+
+    if (!row.name || !row.phone || !row.address) {
+      return (ctx.body = {
+        code: -1,
+        data: null,
+        msg: '请完善联系人、电话、收获地址等信息！'
+      });
+    }
+
+    const uuidValue = uuid();
+
+    await db.query(
+      `
+        INSERT INTO orders (id, customer_id, type) VALUES (?, ?, ?)
+      `,
+      [uuidValue, row.id, '0']
+    );
+
+    for await (let item of goods) {
+      try {
+        await db.query(
+          `
+            INSERT INTO order_middles (order_id, goods_id, price, buyNumber) VALUES (?, ?, ?, ?)
+          `,
+          [uuidValue, item.id, row.is_vip === '1' ? item.vprice : item.price, item.buyNumber]
+        );
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // 返回数据
+    ctx.body = {
+      code: 200,
+      data: null,
+      msg: ''
+    };
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const getOrderList = async (ctx, next) => {
+  const account = utils.getTokenName(ctx.request.headers.jwt);
+
+  try {
+    const [row] = await db.query(
+      `
+        SELECT
+            t1.id,
+            t1.account
+        FROM
+            customer t1
+        WHERE
+            t1.account=? AND t1.deleted=?
+      `,
+      [account, 0]
+    );
+
+    const customerId = row.id;
+
+    const rows = await db.query(
+      `
+        SELECT
+            t1.id,
+            t1.type
+        FROM
+            orders t1
+        WHERE
+            t1.customer_id=? AND t1.deleted=?
+        ORDER BY
+            t1.create_on DESC
+      `,
+      [customerId, 0]
+    );
+
+    for await (let item of rows) {
+      try {
+        let goods = await db.query(
+          `
+            SELECT
+              t1.goods_id AS id,
+              t1.buyNumber,
+              t1.price,
+              t2.title,
+              t2.img_path
+            FROM
+              order_middles t1
+            LEFT JOIN
+              goods t2
+            ON
+              t1.goods_id = t2.id
+            WHERE
+              t1.order_id=?
+            AND
+              t1.deleted=?
+          `,
+          [item.id, 0]
+        );
+        // debug(22, goods);
+        item.list = goods;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // 返回数据
+    ctx.body = {
+      code: 200,
+      data: rows,
+      msg: ''
+    };
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 module.exports = {
   register,
   doLogin,
   getGoodsList,
   getGoodsRecord,
   getPersonInfo,
-  updatePersonInfo
+  updatePersonInfo,
+  getVipInfo,
+  createOrderList,
+  getOrderList
 };

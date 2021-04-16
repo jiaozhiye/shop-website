@@ -17,5 +17,8 @@ router.post('/api/website/getGoodsList', controllers.website.getGoodsList);
 router.get('/api/website/getGoodsRecord', controllers.website.getGoodsRecord);
 router.get('/api/auth/getPersonInfo', controllers.website.getPersonInfo);
 router.post('/api/auth/updatePersonInfo', controllers.website.updatePersonInfo);
+router.get('/api/auth/getVipInfo', controllers.website.getVipInfo);
+router.post('/api/auth/createOrderList', controllers.website.createOrderList);
+router.get('/api/auth/getOrderList', controllers.website.getOrderList);
 
 module.exports = router;

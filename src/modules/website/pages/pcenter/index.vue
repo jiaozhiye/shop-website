@@ -2,6 +2,9 @@
   <div>
     <div class="toper">
       <div class="w1200 top tr">
+        <el-button type="text" @click="goToHandle('/order')">我的订单</el-button>
+        <el-button type="text" @click="goToHandle('/shopcar')">购物车</el-button>
+        <el-button type="text" @click="goToHandle('/pcenter')">个人中心</el-button>
         <el-button type="text" @click="goToHandle('/home')">返回首页</el-button>
       </div>
     </div>
