@@ -32,6 +32,7 @@
 
 <script>
 import { getPersonInfo, updatePersonInfo } from '@website/api/pcenter';
+import { phoneValidate } from '@/utils/validate';
 
 export default {
   name: 'PCenter',
@@ -45,7 +46,7 @@ export default {
       },
       rules: {
         name: [{ required: true, message: '请输入联系人姓名.', trigger: 'blur' }],
-        phone: [{ required: true, message: '请输入联系人电话.', trigger: 'blur' }],
+        phone: [{ required: true, validator: phoneValidate, trigger: 'blur' }],
         address: [{ required: true, message: '请输入收货地址.', trigger: 'blur' }]
       }
     };
