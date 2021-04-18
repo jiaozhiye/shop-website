@@ -2,7 +2,7 @@
  * @Author: mashaoze
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: mashaoze
- * @Last Modified time: 2020-12-22 10:54:31
+ * @Last Modified time: 2021-04-18 09:55:58
  */
 'use strict';
 
@@ -94,7 +94,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       filename: config.build.index,
       template: 'public/index.html',
       inject: true,
-      favicon: utils.resolve('public/favicon.ico'),
+      // favicon: utils.resolve('public/favicon.ico'),
       minify: {
         removeComments: true
       },

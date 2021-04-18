@@ -1,7 +1,7 @@
 /*
  * @Author: mashaoze
  * @Date: 2020-05-17 09:36:33
- * @Last Modified by: 焦质晔
+ * @Last Modified by: mashaoze
  * @Last Modified time: 2021-04-16 09:09:00
  */
 export default {

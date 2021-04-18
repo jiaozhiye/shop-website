@@ -2,14 +2,14 @@
  * @Author: mashaoze
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: mashaoze
- * @Last Modified time: 2021-03-28 13:38:17
+ * @Last Modified time: 2021-04-18 10:46:49
  */
 import { uniqWith, isEqual } from 'lodash';
 import * as types from '../types';
 import i18n from '@/lang';
 import config from '@/config';
 import router from '@/routes';
-import { setToken, setGray, setUserName, removeToken, removeGray, removeWechatAvatar } from '@/utils/cookies';
+import { setToken, setGray, setUserName, removeToken, removeGray, removeUserName } from '@/utils/cookies';
 import variables from '@/assets/css/variables.scss';
 import localDict from '@/utils/localDict';
 import { getNavList, getAllDict, getStarMenuList, getCommonMenuList, createMenuPoint } from '@/api/login';
@@ -94,18 +94,12 @@ const actions = {
   createLogout({ dispatch, commit, state }, params) {
     removeToken();
     removeGray();
-    removeWechatAvatar();
+    removeUserName();
     commit({
       type: types.LOGOUT,
       data: {}
     });
-    dispatch('clearNavList');
-    if (process.env.NODE_ENV === 'development') {
-      router.push({ path: '/login' }).catch(() => {});
-    } else {
-      // 刷新浏览器，释放内存
-      setTimeout(() => (window.location = '/login'), 300);
-    }
+    setTimeout(() => (window.location = '/home'), 200);
   },
   createWeChat({ commit, state }, params) {
     commit({

@@ -84,6 +84,17 @@ const doLogin = async (ctx, next) => {
   }
 };
 
+const doLogout = async (ctx, next) => {
+  ctx.session = null;
+  ctx.cookies.set('jwt', null, { maxAge: -1 });
+  // 返回数据
+  ctx.body = {
+    code: 200,
+    data: null,
+    msg: '成功退出登录！'
+  };
+};
+
 const getGoodsList = async (ctx, next) => {
   let { currentPage, pageSize, title } = ctx.request.body;
 
@@ -327,6 +338,19 @@ const createOrderList = async (ctx, next) => {
           `,
           [uuidValue, item.id, row.is_vip === '1' ? item.vprice : item.price, item.buyNumber]
         );
+        debug(123, item.inventory - item.buyNumber);
+        // 处理库存
+        await db.query(
+          `
+            UPDATE
+                goods t1
+            SET
+                t1.inventory = ?
+            WHERE
+                t1.id=? AND t1.deleted=?
+          `,
+          [item.inventory - item.buyNumber, item.id, 0]
+        );
       } catch (e) {
         console.error(e);
       }
@@ -421,6 +445,7 @@ const getOrderList = async (ctx, next) => {
 module.exports = {
   register,
   doLogin,
+  doLogout,
   getGoodsList,
   getGoodsRecord,
   getPersonInfo,

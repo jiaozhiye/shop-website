@@ -28,11 +28,11 @@
             <el-button type="danger" size="small" icon="el-icon-delete" @click="removeHandle(item.id)">删除</el-button>
           </div>
         </li>
-        <p v-if="!shopcars.length" class="empty-car">购物车已清空...</p>
+        <p v-if="isEmpty" class="empty-car">购物车已清空...</p>
       </ul>
       <dl class="total tr">总金额：{{ totalPrice.toFixed(2) }} 元</dl>
       <dl class="tr">
-        <el-button type="primary" size="small" @click="accountHandle()">立即结算</el-button>
+        <el-button type="primary" size="small" :disabled="isEmpty" @click="accountHandle()">立即结算</el-button>
       </dl>
     </div>
   </div>
@@ -57,6 +57,9 @@ export default {
         curr = curr.buyNumber * (this.isVip ? curr.vprice : curr.price);
         return prev + curr;
       }, 0);
+    },
+    isEmpty() {
+      return !this.shopcars.length;
     }
   },
   watch: {

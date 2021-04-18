@@ -108,6 +108,7 @@ export default {
       }
       carts.push({ id, ...this.goodsItem, ...this.form });
       localStorage.setItem(key, JSON.stringify(carts));
+      this.$message.success('购物车添加成功！');
     },
     goToHandle(path) {
       this.$router.push({ path });

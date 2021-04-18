@@ -2,7 +2,7 @@
  * @Author: mashaoze
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: mashaoze
- * @Last Modified time: 2020-11-26 20:11:32
+ * @Last Modified time: 2021-04-18 09:53:38
  */
 'use strict';
 
@@ -56,7 +56,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       filename: 'index.html',
       template: 'public/index.html',
       inject: true,
-      favicon: 'public/favicon.ico',
+      // favicon: 'public/favicon.ico',
       templateParameters: {
         BASE_URL: config.dev.assetsPublicPath + config.dev.assetsSubDirectory
       }

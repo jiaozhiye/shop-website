@@ -11,6 +11,7 @@
         <el-button type="text" @click="goToHandle('/order')">我的订单</el-button>
         <el-button type="text" @click="goToHandle('/shopcar')">购物车</el-button>
         <el-button type="text" @click="goToHandle('/pcenter')">个人中心</el-button>
+        <el-button v-if="customer" type="text" @click="logoutHandle">退出</el-button>
       </div>
     </div>
     <div class="w1200">
@@ -65,9 +66,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { getUserName } from '@/utils/cookies';
 import { doRegister, getGoodsList } from '@website/api/home';
+import { doLogout } from '@common/api/login';
 
 export default {
   name: 'Home',
@@ -118,6 +120,7 @@ export default {
     this.getList();
   },
   methods: {
+    ...mapActions('app', ['createLogout']),
     async doValidate() {
       try {
         return await this.$refs[`form`].validate();
@@ -152,6 +155,15 @@ export default {
         this.goodsList = res.data?.records || [];
         this.total = res.data?.total || 0;
       }
+    },
+    async logoutHandle() {
+      try {
+        const res = await doLogout();
+        if (res.code === 200) {
+          this.$message.success(res.msg);
+          this.createLogout();
+        }
+      } catch (err) {}
     }
   }
 };
@@ -178,6 +190,7 @@ export default {
   }
 }
 .goods {
+  min-height: 520px;
   ul {
     li {
       float: left;

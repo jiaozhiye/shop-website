@@ -14,15 +14,15 @@ const login = async (ctx, next) => {
     // 数据库 I/O
     rows = await db.query(
       `
-        SELECT 
+        SELECT
             t1.id, t1.username as name
-        FROM 
+        FROM
             user t1
-        WHERE 
+        WHERE
             t1.username=?
-        AND 
+        AND
             t1.password=?
-        AND 
+        AND
             t1.deleted=0
       `,
       [username, md5(password)]
@@ -41,7 +41,7 @@ const login = async (ctx, next) => {
 
     // token签名 有效期为24小时
     let token = jwt.sign({ name: data.name }, config.auth.admin_secret, {
-      expiresIn: '24h',
+      expiresIn: '24h'
     });
 
     // 返回数据
@@ -51,8 +51,8 @@ const login = async (ctx, next) => {
       data: {
         id: data.id,
         name: data.name,
-        token,
-      },
+        token
+      }
     };
   } catch (e) {
     console.error(e);
@@ -62,8 +62,12 @@ const login = async (ctx, next) => {
 const logout = async (ctx, next) => {
   ctx.session = null;
   ctx.cookies.set('jwt', null, { maxAge: -1 });
-  ctx.state.code = -2;
-  ctx.state.msg = '成功退出登录！';
+  // 返回数据
+  ctx.body = {
+    code: 200,
+    data: null,
+    msg: '成功退出登录！'
+  };
 };
 
 const upload = async (ctx, next) => {
@@ -74,12 +78,12 @@ const upload = async (ctx, next) => {
   ctx.body = {
     code: 200,
     data: `${ctx.origin}/${basename}`,
-    msg: '',
+    msg: ''
   };
 };
 
 module.exports = {
   login,
   logout,
-  upload,
+  upload
 };
